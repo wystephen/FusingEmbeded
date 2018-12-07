@@ -69,7 +69,7 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
+  * @brief  The applicationation entry point.
   *
   * @retval None
   */
@@ -106,14 +106,17 @@ int main(void)
 	  s_data[i]  = (i%26) + 'a';
   }
 
+//  UART_HandleTypeDef UART1_Handler;
+//  UART1_Handler=huart1;//use usart1 as printf's out put port
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  HAL_UART_Transmit(&huart1,s_data,100,100);
-//	  HAL_UART_Transmit(&huart2,s_data,100,100);
+	  /*	  HAL_UART_Transmit(&huart1,s_data,100,100); */
+	  /*  HAL_UART_Transmit(&huart2,s_data,100,100); */
 
 	  int i=1000;
 	  while(i>0) i--;
@@ -123,11 +126,16 @@ int main(void)
 	  char two_data[100] = {0};
 
 
+
+
 	  modified_char(one_data, 100);
 	  modified_char(two_data,100);
 
-	  HAL_UART_Transmit(&huart, one_data, 100, 100);
-	  HAL_UART_Transmit(&huart2, two_data, 100, 100);
+
+//	  HAL_UART_Transmit(&huart1, one_data, 100, 100);
+//	  HAL_UART_Transmit(&huart2, two_data, 100, 100);
+	  printf("test%d",one_data[0]);
+	  printf("test%f\n",100.0f);
 
 
 
@@ -140,6 +148,8 @@ int main(void)
   /* USER CODE END 3 */
 
 }
+
+
 
 /**
   * @brief System Clock Configuration

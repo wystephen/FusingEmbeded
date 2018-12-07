@@ -45,6 +45,10 @@
 
 /* USER CODE BEGIN Includes */
 #include "rotation_tool.h"
+
+
+
+
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
@@ -57,6 +61,21 @@
 /* #define USE_FULL_ASSERT    1U */
 
 /* USER CODE BEGIN Private defines */
+
+/**
+ * Using for huar1 printf function.
+ */
+extern UART_HandleTypeDef huart1;
+int _write(int file, char *ptr, int len)
+{
+  /* Implement your write code here, this is used by puts and printf for example */
+  int i=0;
+//  for(i=0 ; i<len ; i++)
+//    ITM_SendChar((*ptr++));
+  HAL_UART_Transmit(&huart1, ptr, len, 100);
+  return len;
+}
+
 
 /* USER CODE END Private defines */
 
