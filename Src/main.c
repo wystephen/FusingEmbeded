@@ -101,9 +101,9 @@ float imu_data[9]={0};
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	UNUSED(huart);
 
-	char tmp_data[] = "Recieved Data";
-	HAL_UART_Transmit_IT(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
-	HAL_UART_Transmit_IT(&huart1,tmp_data,10);
+//	char tmp_data[] = "Recieved Data";
+//	HAL_UART_Transmit_IT(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
+//	HAL_UART_Transmit_IT(&huart1,tmp_data,10);
 
 	// recieved a whole line.
 	if(s_data[s_data_index]=='\n'){
@@ -114,15 +114,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		float ax=0;
 		float ay = 0;
 		float az = 0;
-		sscanf(s_data,"%1.1f %1.1f %1.1f %1.1f %1.1f %1.1f",
+		float gx = 0;
+		float gy = 0;
+		float gz = 0;
+		sscanf(s_data,"%f %f %f %f %f %f",
 				&(ax),&(ay),&(az),
-				&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
+				&gx,&gy,&gz);
+//				&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
+
+//		int a=0;
+//		int b = 0;
+//		sscanf(s_data,"{%d,%d}\n",&a,&b);
 
 
-		sprintf(tmp_char,"%4.4f,%4.4f,%4.4f,%4.4f,%4.4f,%4.4f\n",
-				imu_data[0]+imu_data[1],imu_data[1]+imu_data[2],imu_data[2],
-				imu_data[3],imu_data[4],imu_data[5]);
-		HAL_UART_Transmit_IT(&huart2, tmp_char, 800);
+
+		int len = sprintf(tmp_char,"%4.4f,%4.4f,%4.4f,%4.4f,%4.4f,%4.4f\n",
+				ax,ay,az,gx,gy,gz);
+		HAL_UART_Transmit_IT(&huart1, (uint8_t*)tmp_char, len);
 		for(int i=0;i<s_data_index+1;++i){
 			s_data[i]=0;
 		}
