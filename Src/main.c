@@ -90,25 +90,59 @@ static void MX_NVIC_Init(void);
 /* USER CODE BEGIN 0 */
 
 
-char s_data[100] = { 0 };
+
+char s_data[1000] = { 0 };
+uint8_t s_data_index=0;
+uint8_t s_data_size=1000;
+char tmp_char[1000]={0};
+float imu_data[9]={0};
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-//	int size = huart->RxXferSize;
-//	global_char_data = malloc(sizeof(char)*size);
-//	HAL_UART_Receive_IT(huart, global_char_data, huart->RxXferSize);
-//
-//	HAL_UART_Transmit(&huart1, global_char_data, size, 100);
-//	while(__HAL_UART_GET_FLAG(&huart1,UART_FLAG_TC)!=SET);
-//	free(global_char_data);
-//	UNUSED(huart);
+	UNUSED(huart);
 
-	char tmp_data[16] = "configure data";
-//	HAL_UART_Transmit_DMA(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
+	char tmp_data[] = "Recieved Data";
 	HAL_UART_Transmit_IT(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
 	HAL_UART_Transmit_IT(&huart1,tmp_data,10);
 
-	HAL_UART_Receive_IT(huart, s_data, 15);
+	// recieved a whole line.
+	if(s_data[s_data_index]=='\n'){
+//		s_data[s_data_index+1] = '\0';
+		for(int i=s_data_index+1;i<s_data_size;++i){
+			s_data[i] = '\0';
+		}
+		float ax=0;
+		float ay = 0;
+		float az = 0;
+		sscanf(s_data,"%1.1f %1.1f %1.1f %1.1f %1.1f %1.1f",
+				&(ax),&(ay),&(az),
+				&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
+
+
+		sprintf(tmp_char,"%4.4f,%4.4f,%4.4f,%4.4f,%4.4f,%4.4f\n",
+				imu_data[0]+imu_data[1],imu_data[1]+imu_data[2],imu_data[2],
+				imu_data[3],imu_data[4],imu_data[5]);
+		HAL_UART_Transmit_IT(&huart2, tmp_char, 800);
+		for(int i=0;i<s_data_index+1;++i){
+			s_data[i]=0;
+		}
+		s_data_index = 0;
+
+	}else{
+		s_data_index++;
+	}
+
+	// Error happend
+	if(s_data_index>s_data_size){
+		s_data_index = 0;
+		for(int i=0;i<s_data_size;++i){
+			s_data[i]=0;
+		}
+	}
+
+	if(HAL_UART_Receive_IT(huart, s_data+s_data_index, 1)!=HAL_OK){
+		Error_Handler();
+	}
 
 }
 
@@ -153,14 +187,20 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-	for (uint8_t i = 0; i < 100; ++i) {
-		s_data[i] = (i % 26) + 'a';
-	}
+//	for (uint8_t i = 0; i < 100; ++i) {
+//		s_data[i] = (i % 26) + 'a';
+//	}
 
 //  UART_HandleTypeDef UART1_Handler;
 //  UART1_Handler=huart1;//use usart1 as printf's out put port
-	HAL_UART_Receive_IT(&huart1, s_data, 10);
-	HAL_UART_Receive_IT(&huart2, s_data+15, 10);
+	if(HAL_UART_Receive_IT(&huart1, s_data+s_data_index, 1)!=HAL_OK){
+		Error_Handler();
+	}
+//	if(HAL_UART_Receive_IT(&huart2, s_data+, 1)!=HAL_OK){
+//		Error_Handler();
+//	}
+
+
 //	HAL_UART_Receive_DMA(&huart2, s_data, 10);
 
   /* USER CODE END 2 */
@@ -169,7 +209,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1) {
 
-	  char buf[1000];
 //	  HAL_UART_Receive_DMA(&huart1,(uint8_t*)buf,10);
 
 
