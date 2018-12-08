@@ -101,13 +101,10 @@ float imu_data[9]={0};
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	UNUSED(huart);
 
-//	char tmp_data[] = "Recieved Data";
-//	HAL_UART_Transmit_IT(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
-//	HAL_UART_Transmit_IT(&huart1,tmp_data,10);
+
 
 	// recieved a whole line.
 	if(s_data[s_data_index]=='\n'){
-//		s_data[s_data_index+1] = '\0';
 		for(int i=s_data_index+1;i<s_data_size;++i){
 			s_data[i] = '\0';
 		}
@@ -122,9 +119,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 				&gx,&gy,&gz);
 //				&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
 
-//		int a=0;
-//		int b = 0;
-//		sscanf(s_data,"{%d,%d}\n",&a,&b);
+
 
 
 
