@@ -88,11 +88,6 @@ static void MX_NVIC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-
-char s_data[100] = { 0 };
-
-
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 //	int size = huart->RxXferSize;
 //	global_char_data = malloc(sizeof(char)*size);
@@ -104,11 +99,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 //	UNUSED(huart);
 
 	char tmp_data[16] = "configure data";
-//	HAL_UART_Transmit_DMA(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
+	HAL_UART_Transmit_DMA(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
 	HAL_UART_Transmit_IT(&huart2, tmp_data, 10);//(&huart2, tmp_data, 16,100);
-	HAL_UART_Transmit_IT(&huart1,tmp_data,10);
+	HAL_UART_Transmit(&huart1,tmp_data,10,1000);
 
-	HAL_UART_Receive_IT(huart, s_data, 15);
+	HAL_UART_Receive_DMA(huart, tmp_data, 15);
 
 }
 
@@ -152,26 +147,51 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-
+	char s_data[100] = { 0 };
 	for (uint8_t i = 0; i < 100; ++i) {
 		s_data[i] = (i % 26) + 'a';
 	}
 
 //  UART_HandleTypeDef UART1_Handler;
 //  UART1_Handler=huart1;//use usart1 as printf's out put port
-	HAL_UART_Receive_IT(&huart1, s_data, 10);
-	HAL_UART_Receive_IT(&huart2, s_data+15, 10);
-//	HAL_UART_Receive_DMA(&huart2, s_data, 10);
+	HAL_UART_Receive_DMA(&huart1, s_data, 10);
+	HAL_UART_Receive_DMA(&huart2, s_data, 10);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+		/*	  HAL_UART_Transmit(&huart1,s_data,100,100); */
+		/*  HAL_UART_Transmit(&huart2,s_data,100,100); */
 
+//	  HAL_UART_Transmit(&huart1, one_data, 100, 100);
+//	  HAL_UART_Transmit(&huart2, two_data, 100, 100);
+//	  printf("test%f\n",100.0f);
+//	  if(huart2.RxXferSize>0){
+//		  char *buf;
+//		  int size = huart2.RxXferSize;
+//		  buf=malloc(sizeof(char)*huart2.RxXferSize);
+//		  for(int k=0;k<huart2.RxXferSize;++k){
+//			  buf[k] = huart2.pRxBuffPtr[k];
+//		  }
+//		  HAL_UART_Transmit(&huart1, buf, size, 100);
+//	  }
+//	  HAL_UART_Transmit_IT(&huart1 ,(uint8_t*)aTxStartMessages,sizeof(aTxStartMessages)); //sizeof()可读取目标长度
 	  char buf[1000];
-//	  HAL_UART_Receive_DMA(&huart1,(uint8_t*)buf,10);
-
+	  HAL_UART_Receive_DMA(&huart1,(uint8_t*)buf,10);
+//	  HAL_UART_Transmit(&huart1, buf, 10, 10);
+//		if (huart2.RxState == HAL_UART_STATE_READY) {
+//			char *buf;
+//			int size = huart2.RxXferSize;
+//			buf = malloc(sizeof(char) * huart2.RxXferSize);
+//			for (int k = 0; k < huart2.RxXferSize; ++k) {
+//				buf[k] = huart2.pRxBuffPtr[k];
+//			}
+////			huart1.RxState=H
+//			HAL_UART_Transmit(&huart1, buf, size, 100);
+//
+//		}
 
     /* USER CODE END WHILE */
 
