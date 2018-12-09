@@ -89,67 +89,65 @@ static void MX_NVIC_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+char serial_data_buf[1000] = { 0 };
+int serial_data_buf_index = 0;
+int s_data_size = 1000;
+char tmp_char[1000] = { 0 };
+float imu_data[9] = { 0 };
+float uwb_data[6] = {0};
 
-
-char s_data[1000] = { 0 };
-uint8_t s_data_index=0;
-uint8_t s_data_size=1000;
-char tmp_char[1000]={0};
-float imu_data[9]={0};
-
-
+/**
+ * UART callback (when read data finished).
+ */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	UNUSED(huart);
 
-
-
 	// recieved a whole line.
-	if(s_data[s_data_index]=='\n'){
-		for(int i=s_data_index+1;i<s_data_size;++i){
-			s_data[i] = '\0';
+	if (serial_data_buf[serial_data_buf_index] == '\n') {
+		for (int i = serial_data_buf_index + 1; i < s_data_size; ++i) {
+			serial_data_buf[i] = '\0';
 		}
-		float ax=0;
+		float ax = 0;
 		float ay = 0;
 		float az = 0;
 		float gx = 0;
 		float gy = 0;
 		float gz = 0;
-		sscanf(s_data,"%f %f %f %f %f %f",
-				&(ax),&(ay),&(az),
-				&gx,&gy,&gz);
-//				&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
 
+		sscanf(serial_data_buf, "%f %f %f %f %f %f",
+//				&(ax),&(ay),&(az),
+//				&gx,&gy,&gz);
+				&(imu_data[0]), &(imu_data[1]), &(imu_data[2]), &(imu_data[3]),
+				&(imu_data[4]), &(imu_data[5]));
 
-
-
-
-		int len = sprintf(tmp_char,"%4.4f,%4.4f,%4.4f,%4.4f,%4.4f,%4.4f\n",
-				ax,ay,az,gx,gy,gz);
-		HAL_UART_Transmit_IT(&huart1, (uint8_t*)tmp_char, len);
-		for(int i=0;i<s_data_index+1;++i){
-			s_data[i]=0;
+		int len = sprintf(tmp_char, "%4.4f,%4.4f,%4.4f,%4.4f,%4.4f,%4.4f\n",
+				imu_data[0], imu_data[1], imu_data[2], imu_data[3], imu_data[4],
+				imu_data[5]);
+		HAL_UART_Transmit_IT(&huart1, (uint8_t*) tmp_char, len);
+		for (int i = 0; i < serial_data_buf_index + 1; ++i) {
+			serial_data_buf[i] = 0;
 		}
-		s_data_index = 0;
+		serial_data_buf_index = 0;
 
-	}else{
-		s_data_index++;
+	} else {
+		serial_data_buf_index++;
 	}
 
-	// Error happend
-	if(s_data_index>s_data_size){
-		s_data_index = 0;
-		for(int i=0;i<s_data_size;++i){
-			s_data[i]=0;
+	if (serial_data_buf_index > s_data_size) {
+		serial_data_buf_index = 0;
+		for (int i = 0; i < s_data_size; ++i) {
+			serial_data_buf[i] = 0;
 		}
 	}
 
-	if(HAL_UART_Receive_IT(huart, s_data+s_data_index, 1)!=HAL_OK){
+
+
+	if (HAL_UART_Receive_IT(huart, serial_data_buf + serial_data_buf_index, 1) != HAL_OK) {
 		Error_Handler();
 	}
 
 }
 
-//void HAL_UART_Tx
 
 /* USER CODE END 0 */
 
@@ -189,22 +187,11 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-
-//	for (uint8_t i = 0; i < 100; ++i) {
-//		s_data[i] = (i % 26) + 'a';
-//	}
-
-//  UART_HandleTypeDef UART1_Handler;
-//  UART1_Handler=huart1;//use usart1 as printf's out put port
-	if(HAL_UART_Receive_IT(&huart1, s_data+s_data_index, 1)!=HAL_OK){
+	 // Recieve data from huart1
+	if (HAL_UART_Receive_IT(&huart1, serial_data_buf + serial_data_buf_index, 1) != HAL_OK) {
 		Error_Handler();
 	}
-//	if(HAL_UART_Receive_IT(&huart2, s_data+, 1)!=HAL_OK){
-//		Error_Handler();
-//	}
 
-
-//	HAL_UART_Receive_DMA(&huart2, s_data, 10);
 
   /* USER CODE END 2 */
 
@@ -213,7 +200,6 @@ int main(void)
 	while (1) {
 
 //	  HAL_UART_Receive_DMA(&huart1,(uint8_t*)buf,10);
-
 
     /* USER CODE END WHILE */
 

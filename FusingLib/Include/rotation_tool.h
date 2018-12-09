@@ -1,29 +1,61 @@
 
-
 #ifndef __ROTATION_TOOL_H__
 #define  __ROTATION_TOOL_H__
-#include "stm32f4xx_hal.h"
+#include "matrix_tools.h"
+#include "math.h"
 
-#define FLOAT float
+typedef struct {
+	FLOAT w;
+	FLOAT x;
+	FLOAT y;
+	FLOAT z;
+} Quaternion_sub;
+
+/**
+ * Quaternion struct
+ */
+typedef union {
+	FLOAT data[4];
+	Quaternion_sub q;
+} Quaternion;
+
+/**
+ * Rotation Matrix struct
+ */
+typedef struct {
+	FLOAT data[9];
+} RotationMatrix;
+
+/**
+ * struct for
+ */
+typedef struct {
+	FLOAT x;
+	FLOAT y;
+	FLOAT z;
+} EulerAngle_sub;
+
+typedef union {
+	FLOAT data[3];
+	EulerAngle_sub angle;
+} EulerAngle;
+
+typedef struct  {
+	Quaternion q;
+	RotationMatrix R;
+	EulerAngle angle;
+}RotationStruct;
 
 /**
  * test include library for compiler.
  */
-void modified_char(char *data,int size);
+void modified_char(char *data, int size);
 
 /**
- * Global Data struct
+ * Left update of quaternion.
+ * @param q: quaternion will be update and normalize in-place.
+ * @param w:
  */
-
-struct EKFState{
-	FLOAT x[15];
-	FLOAT P[15*15];
-
-	FLOAT K[15*15];
-	FLOAT H[15*15];
-	FLOAT Z[15];
-};
-
-
+void quaternion_left_update(Quaternion *q, FLOAT *w, FLOAT rate);
 
 #endif
