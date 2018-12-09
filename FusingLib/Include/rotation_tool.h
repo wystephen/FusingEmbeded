@@ -27,7 +27,7 @@ typedef struct {
 } RotationMatrix;
 
 /**
- * struct for
+ * struct for easy access.
  */
 typedef struct {
 	FLOAT x;
@@ -35,11 +35,18 @@ typedef struct {
 	FLOAT z;
 } EulerAngle_sub;
 
+/**
+ * EulerAngle struct
+ */
 typedef union {
 	FLOAT data[3];
 	EulerAngle_sub angle;
 } EulerAngle;
 
+/**
+ * RotationStruct
+ * TODO: maintain the three value represent same state of rotation.
+ */
 typedef struct  {
 	Quaternion q;
 	RotationMatrix R;
@@ -52,10 +59,35 @@ typedef struct  {
 void modified_char(char *data, int size);
 
 /**
- * Left update of quaternion.
+ * Left update for quaternion.
  * @param q: quaternion will be update and normalize in-place.
  * @param w:
+ * @param rate: using to changing update ratio(coulb be -1.0, 1.0, time_interval.
+ *
+ * @return: 0-OK
  */
-void quaternion_left_update(Quaternion *q, FLOAT *w, FLOAT rate);
+int quaternion_left_update(Quaternion *q, FLOAT *w, FLOAT rate);
+
+/**
+ * Right update for quaternion 1
+ * @param q: quaternion
+ * @param w: euler angle or
+ * @param rate:
+ */
+int quaternion_right_update(Quaternion *q, FLOAT *w, FLOAT rate);
+
+/**
+ * Convert quaternion to roation matrix(which is easy to adopted in rotate some 3d vector)
+ */
+int q2dcm(Quaternion *q, RotationMatrix *R);
+
+
+/**
+ *
+ */
+int
+
+
+
 
 #endif
