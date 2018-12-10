@@ -53,6 +53,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "rotation_tool.h"
+#include "ekf_tools.h"
 
 
 

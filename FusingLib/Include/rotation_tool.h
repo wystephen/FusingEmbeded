@@ -1,28 +1,91 @@
 
-
 #ifndef __ROTATION_TOOL_H__
 #define  __ROTATION_TOOL_H__
-#include "stm32f4xx_hal.h"
+#include "matrix_tools.h"
+#include "math.h"
 
-#define FLOAT float
+typedef struct {
+	FLOAT w;
+	FLOAT x;
+	FLOAT y;
+	FLOAT z;
+} Quaternion_sub;
+
+/**
+ * Quaternion struct
+ */
+typedef union {
+	FLOAT data[4];
+	Quaternion_sub q;
+} Quaternion;
+
+/**
+ * Rotation Matrix struct
+ */
+typedef struct {
+	FLOAT data[9];
+} RotationMatrix;
+
+/**
+ * struct for easy access.
+ */
+typedef struct {
+	FLOAT x;
+	FLOAT y;
+	FLOAT z;
+} EulerAngle_sub;
+
+/**
+ * EulerAngle struct
+ */
+typedef union {
+	FLOAT data[3];
+	EulerAngle_sub angle;
+} EulerAngle;
+
+/**
+ * RotationStruct
+ * TODO: maintain the three value represent same state of rotation.
+ */
+typedef struct  {
+	Quaternion q;
+	RotationMatrix R;
+	EulerAngle angle;
+}RotationStruct;
 
 /**
  * test include library for compiler.
  */
-void modified_char(char *data,int size);
+void modified_char(char *data, int size);
 
 /**
- * Global Data struct
+ * Left update for quaternion.
+ * @param q: quaternion will be update and normalize in-place.
+ * @param w:
+ * @param rate: using to changing update ratio(coulb be -1.0, 1.0, time_interval.
+ *
+ * @return: 0-OK
+ */
+int quaternion_left_update(Quaternion *q, FLOAT *w, FLOAT rate);
+
+/**
+ * Right update for quaternion 1
+ * @param q: quaternion
+ * @param w: euler angle or
+ * @param rate:
+ */
+int quaternion_right_update(Quaternion *q, FLOAT *w, FLOAT rate);
+
+/**
+ * Convert quaternion to roation matrix(which is easy to adopted in rotate some 3d vector)
+ */
+int q2dcm(Quaternion *q, RotationMatrix *R);
+
+
+/**
+ *
  */
 
-struct EKFState{
-	FLOAT x[15];
-	FLOAT P[15*15];
-
-	FLOAT K[15*15];
-	FLOAT H[15*15];
-	FLOAT Z[15];
-};
 
 
 
