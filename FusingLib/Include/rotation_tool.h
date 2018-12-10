@@ -64,7 +64,7 @@ void modified_char(char *data, int size);
  * @param w:
  * @param rate: using to changing update ratio(coulb be -1.0, 1.0, time_interval.
  *
- * @return: 0-OK
+ * @return: 0-OK 1-failed
  */
 int quaternion_left_update(Quaternion *q, FLOAT *w, FLOAT rate);
 
@@ -73,19 +73,39 @@ int quaternion_left_update(Quaternion *q, FLOAT *w, FLOAT rate);
  * @param q: quaternion
  * @param w: euler angle or
  * @param rate:
+ * @return: 0-OK 1-failed
  */
 int quaternion_right_update(Quaternion *q, FLOAT *w, FLOAT rate);
 
+
+/**
+ *
+ * @return: 0-OK 1-failed
+ */
+int euler2R(EulerAngle* angle,RotationMatrix* R);
+
+
+/**
+ * rotation matrix to quaternion
+ * @return: 0-OK 1-failed
+ */
+int dcm2q(RotationMatrix* R, Quaternion* q);
+
+
 /**
  * Convert quaternion to roation matrix(which is easy to adopted in rotate some 3d vector)
+ * @return: 0-OK 1-failed
  */
 int q2dcm(Quaternion *q, RotationMatrix *R);
 
 
 /**
- *
+ * rotation matrix to euler angle.
+ * @return: 0-OK 1-failed
  */
-int
+int dcm2euler(RotationMatrix* R, EulerAngle * angle);
+
+
 
 
 
