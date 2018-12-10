@@ -93,8 +93,7 @@ static void MX_NVIC_Init(void);
 
 char serial_data_buf[1000] = {0};
 int serial_data_buf_index = 0;
-int s_data_index = 0;
-int s_data_size = 1000;
+int serial_data_buf_size = 1000;
 char tmp_char[1000] = { 0 };
 float imu_data[9] = { 0 };
 float uwb_data[6] = { 0 };
@@ -106,21 +105,21 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	UNUSED(huart);
 
 	// recieved a whole line.
-	if (serial_data_buf[s_data_index] == '\n') {
-		for (int i = s_data_index + 1; i < s_data_size; ++i) {
-			s_data[i] = '\0';
+	if (serial_data_buf[serial_data_buf_index] == '\n') {
+		for (int i = serial_data_buf_index + 1; i < serial_data_buf_size; ++i) {
+			serial_data_buf[i] = '\0';
 		}
 
-		if (s_data[0] == 'i') {
-			sscanf(s_data + 1, "%f,%f,%f,%f,%f,%f", &(imu_data[0]),
+		if (serial_data_buf[0] == 'i') {
+			sscanf(serial_data_buf + 1, "%f,%f,%f,%f,%f,%f", &(imu_data[0]),
 					&(imu_data[1]), &(imu_data[2]), &(imu_data[3]),
 					&(imu_data[4]), &(imu_data[5]));
 
 			//TODO: process IMU update
 
 		}
-		if (s_data[0] == 'u') {
-			sscanf(s_data + 1, "%f,%f,%f,%f,%f,%f", &(uwb_data[0]),
+		if (serial_data_buf[0] == 'u') {
+			sscanf(serial_data_buf+ 1, "%f,%f,%f,%f,%f,%f", &(uwb_data[0]),
 					&(uwb_data[1]), &(uwb_data[2]), &(uwb_data[3]),
 					&(uwb_data[4]), &(uwb_data[5]));
 
@@ -128,14 +127,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 		}
 
-		if (s_data[0] != 'i' && s_data[1] != 'u') {
+		if (serial_data_buf[0] != 'i' && serial_data_buf[1] != 'u') {
 			HAL_UART_Transmit_IT(&huart2, "error", 5);
 		}
 
 //		HAL_UART_Transmit_IT(&huart1, (uint8_t*)tmp_char, len);
 		// re initial data
-		for (int i = 0; i < s_data_index + 1; ++i) {
-			s_data[i] = 0;
+		for (int i = 0; i < serial_data_buf_index + 1; ++i) {
+			serial_data_buf[i] = 0;
 
 		}
 		serial_data_buf_index = 0;
@@ -144,9 +143,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		serial_data_buf_index++;
 	}
 
-	if (serial_data_buf_index > s_data_size) {
+	if (serial_data_buf_index > serial_data_buf_size) {
 		serial_data_buf_index = 0;
-		for (int i = 0; i < s_data_size; ++i) {
+		for (int i = 0; i < serial_data_buf_size; ++i) {
 			serial_data_buf[i] = 0;
 		}
 	}
@@ -208,11 +207,6 @@ int main(void) {
 	while (1) {
 
 //	  HAL_UART_Receive_DMA(&huart1,(uint8_t*)buf,10);
-
-	<<<<<<< HEAD
-
-	=======
-	>>>>>>> 00271e7a75dd8b44c6aa586a7d2b86f5fc946f73
 	/* USER CODE END WHILE */
 
 	/* USER CODE BEGIN 3 */
