@@ -106,7 +106,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	UNUSED(huart);
 
 	// recieved a whole line.
-	if (s_data[s_data_index] == '\n') {
+	if (serial_data_buf[s_data_index] == '\n') {
 		for (int i = s_data_index + 1; i < s_data_size; ++i) {
 			s_data[i] = '\0';
 		}
