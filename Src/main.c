@@ -127,6 +127,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 			//TODO: process uwb measurement.
 
+
 		}
 
 		if(s_data[0]!='i'&&s_data[1]!='u'){
