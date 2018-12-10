@@ -95,7 +95,8 @@ char s_data[1000] = { 0 };
 uint8_t s_data_index=0;
 uint8_t s_data_size=1000;
 char tmp_char[1000]={0};
-float imu_data[9]={0};
+float imu_data[9]={0};//imu dat
+float uwb_data[9]={0};// uwb data (x,y,z) in navigation frame (x,y,z) in sensor frame
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -108,24 +109,36 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		for(int i=s_data_index+1;i<s_data_size;++i){
 			s_data[i] = '\0';
 		}
-		float ax=0;
-		float ay = 0;
-		float az = 0;
-		float gx = 0;
-		float gy = 0;
-		float gz = 0;
-		sscanf(s_data,"%f %f %f %f %f %f",
-				&(ax),&(ay),&(az),
-				&gx,&gy,&gz);
-//				&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
+
+		if(s_data[0]=='i'){
+			sscanf(s_data+1,"%f,%f,%f,%f,%f,%f",
+					&(imu_data[0]),&(imu_data[1]),&(imu_data[2]),
+					&(imu_data[3]),&(imu_data[4]),&(imu_data[5]));
+
+
+			//TODO: process IMU update
+
+
+		}
+		if(s_data[0]=='u'){
+			sscanf(s_data+1,"%f,%f,%f,%f,%f,%f",
+					&(uwb_data[0]),&(uwb_data[1]),&(uwb_data[2]),
+					&(uwb_data[3]),&(uwb_data[4]),&(uwb_data[5]));
+
+			//TODO: process uwb measurement.
+
+		}
+
+		if(s_data[0]!='i'&&s_data[1]!='u'){
+			HAL_UART_Transmit_IT(&huart2,"error",5);
+		}
 
 
 
 
 
-		int len = sprintf(tmp_char,"%4.4f,%4.4f,%4.4f,%4.4f,%4.4f,%4.4f\n",
-				ax,ay,az,gx,gy,gz);
-		HAL_UART_Transmit_IT(&huart1, (uint8_t*)tmp_char, len);
+//		HAL_UART_Transmit_IT(&huart1, (uint8_t*)tmp_char, len);
+		// re initial data
 		for(int i=0;i<s_data_index+1;++i){
 			s_data[i]=0;
 		}
@@ -213,6 +226,7 @@ int main(void)
 	while (1) {
 
 //	  HAL_UART_Receive_DMA(&huart1,(uint8_t*)buf,10);
+
 
 
     /* USER CODE END WHILE */
