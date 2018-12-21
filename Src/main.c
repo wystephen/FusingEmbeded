@@ -124,6 +124,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 					&(uwb_data[4]), &(uwb_data[5]));
 
 			//TODO: process uwb measurement.
+			uint32_t id_array[3];
+			Get_ID(id_array);
+			char out_string[100];
+			sprintf(out_string,"ID:%x-%x-%x\r\n\0",id_array[0],id_array[1],id_array[2]);
+			HAL_UART_Transmit_IT(&huart1, out_string, 100);
+
+
 
 		}
 

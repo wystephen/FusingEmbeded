@@ -55,6 +55,7 @@ extern "C" {
 #include "rotation_tool.h"
 #include "ekf_tools.h"
 
+#include "KeyManage.h"
 
 
 
@@ -103,6 +104,9 @@ void Error_Handler(void);
 //  return len;
 //}
 //#endif
+/**
+ *
+ */
 
 
 /* USER CODE END Private defines */
